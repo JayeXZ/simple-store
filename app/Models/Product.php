@@ -14,13 +14,11 @@ class Product extends Model
         'price', 'stock', 'image'
     ];
 
-    // A product belongs to one category
     public function category()
     {
         return $this->belongsTo(Category::class);
     }
 
-    // A product can appear in many order items
     public function orderItems()
     {
         return $this->hasMany(OrderItem::class);
