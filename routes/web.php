@@ -7,7 +7,7 @@ use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\ProductController as AdminProductController;
 use App\Http\Controllers\Admin\OrderController as AdminOrderController;
-
+use App\Http\Controllers\PaymentController; 
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\OrderController;
@@ -76,6 +76,12 @@ Route::post('/checkout', [CheckoutController::class, 'store'])
 Route::get('/checkout/success/{order}', [CheckoutController::class, 'success'])
  ->name('checkout.success');
 
+Route::get('/payment/{order}', [PaymentController::class, 'pay']) 
+    ->name('payment.pay'); 
+Route::get('/payment/{order}/success', [PaymentController::class, 'success']) 
+    ->name('payment.success'); 
+Route::get('/payment/{order}/failure', [PaymentController::class, 'failure']) 
+    ->name('payment.failure'); 
 
     // Cart
     Route::get('/cart', [CartController::class, 'index'])
@@ -99,4 +105,10 @@ Route::get('/checkout/success/{order}', [CheckoutController::class, 'success'])
 
     Route::get('/orders/{order}', [OrderController::class, 'show'])
         ->name('orders.show');
+
+        // Temporary email preview - remove before deploying 
+Route::get('/email-preview', function () { 
+    $order = \App\Models\Order::with('orderItems.product')->latest()->first(); 
+    return new \App\Mail\OrderPlaced($order); 
+}); 
 });

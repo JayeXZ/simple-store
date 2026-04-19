@@ -7,7 +7,8 @@ use App\Models\OrderItem;
 use App\Models\Product;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-
+use App\Mail\OrderPlaced;
+use Illuminate\Support\Facades\Mail;
 class CheckoutController extends Controller
 {
     // Show the checkout form 
@@ -77,6 +78,14 @@ class CheckoutController extends Controller
 
         // Clear the cart from the session 
         session()->forget('cart');
+        // Clear the cart 
+        session()->forget('cart');
+
+        // Send confirmation email 
+        return redirect()->route('payment.pay', $order);
+
+        return redirect()->route('checkout.success', $order->id)
+            ->with('success', 'Order placed successfully!');
 
         return redirect()->route('checkout.success', $order->id)
             ->with('success', 'Order placed successfully!');
