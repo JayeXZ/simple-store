@@ -1,38 +1,31 @@
-<?php 
- 
-namespace App\Http\Controllers\Admin; 
- 
-Laravel E-Commerce Project   |   Module 5: Admin Panel 
- 
- 
+<?php
 
-use App\Http\Controllers\Controller; 
-use App\Models\Order; 
-use App\Models\Product; 
-use App\Models\User; 
-use App\Models\Category; 
- 
-class DashboardController extends Controller 
+namespace App\Http\Controllers;
+
+use App\Models\Order;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+
+class OrderController extends Controller 
 { 
     public function index() 
     { 
-        $totalOrders    = Order::count(); 
-        $totalProducts  = Product::count(); 
-        $totalUsers     = User::where('role', 'customer')->count(); 
-        $totalCategories = Category::count(); 
-        $totalRevenue   = Order::where('status', '!=', 'cancelled') 
-                              ->sum('total_amount'); 
-        $ordersByStatus = Order::selectRaw('status, count(*) as count') 
-                              ->groupBy('status') 
-                              ->pluck('count', 'status'); 
-        $recentOrders   = Order::with('user') 
-                              ->latest()->take(5)->get(); 
-        $lowStockProducts = Product::where('stock', '<=', 5)->get(); 
- 
-        return view('admin.dashboard', compact( 
-            'totalOrders', 'totalProducts', 'totalUsers', 
-            'totalCategories', 'totalRevenue', 'ordersByStatus', 
-            'recentOrders', 'lowStockProducts' 
-        )); 
+        $orders = Order::where('user_id', Auth::id()) 
+            ->latest() 
+            ->paginate(10); 
+            
+        return view('orders.index', compact('orders')); 
+    }
+
+    public function show(Order $order) 
+    { 
+        // Make sure the order belongs to the logged-in user 
+        if ($order->user_id !== Auth::id()) { 
+            abort(403); 
+        } 
+
+        $order->load('orderItems.product'); 
+        
+        return view('orders.show', compact('order')); 
     } 
-} 
+}

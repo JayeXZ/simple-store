@@ -6,14 +6,15 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration {
     public function up(): void
-    {
-        Schema::create('categories', function (Blueprint $table) {
-            $table->id();
-            $table->string('name');
-            $table->string('slug')->unique();
-            $table->timestamps();
-        });
-    }
+{
+    Schema::create('categories', function (Blueprint $table) {
+        $table->id();                    // Auto-incrementing primary key
+        $table->string('name');          // Category name e.g. Shirts
+        $table->string('slug')->unique();// URL-friendly version e.g. shirts
+        $table->timestamps();            // created_at and updated_at
+    });
+}
+
 
     public function down(): void
     {
